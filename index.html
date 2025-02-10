@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensajeria de cobros</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Libreria para utilizar iconos-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="ladoIzquierdo">
+            <h1>Mensajeria de cobros</h1>
+            <p>"Con esta herramienta podrás importar datos de archivos Excel y enviar mensajes de WhatsApp directamente desde tu navegador, simplificando tus tareas diarias y mejorando tu productividad."</p>
+        
+            <label for="inputArchivo">Selecciona el tipo de archivo:</label>
+            <input type="file" id="inputArchivo" onchange="verificarArchivo()">
+
+            <!-- Botón para abrir la modal con las personas que tiene saldos negativos-->
+            <button id="verificarPagosBtn" style="display: none;" onclick="verificarArchivo()">Verificar personas</button>
+        </div>
+
+        <div class="ladoDerecho">
+            <img src="imagenes/3.png" alt="">
+        </div>
+
+    </div>
+
+    <!-- Modal para mostrar las personas pendientes-->
+    <div id="modalPersonas" class="modal">
+        <div class="contenidoModal">
+            <span class="cerrarBtn" onclick="cerrarModal()">&times;</span>
+            <h2>Personas con facturas pendientes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Télefono</th>
+                        <th>Valor factura</th>
+                        <th>Fecha de creación</th>
+                        <th>Días de retraso</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaModal">
+                    <!-- Los datos de las personas se insertarán aquí -->
+                </tbody>
+            </table>
+
+            <div class="botones">
+                <button id="botonLeerQR"><i class="fa-brands fa-whatsapp"></i></button>
+                <button id="botonEnviarMensajes" style="display:none;">Enviar Mensajes</button>
+                <button onclick="cerrarModal()">Cerrar</button>
+            </div>
+    
+        </div>
+    </div>
+
+    <!-- Contenedor para ver el código QR generado-->
+    <div id="tooltipQR" class="tooltip">
+        <h3>Escanea el código QR con WhatsApp</h3>
+        <img id="codigoQR" src="" alt="Código QR" style="max-width: 100%; max-height: 200px;">
+        <button onclick="cerrarTooltipQR()">Cerrar</button>
+    </div>
+
+    <!-- Contenedor con el (Spinner)-->
+     <div id="cargando" class="cargando" style="display: none;">
+        <div class="spinner"></div>
+        <p>Verificando conexión con WhatsApp</p>
+     </div>
+
+
+    <footer>
+        <div class="contenidoFooter">
+            <p>&copy; 2025 AutosLeo</p>
+        </div>
+    </footer>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html>
