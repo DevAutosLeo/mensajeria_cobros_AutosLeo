@@ -150,7 +150,7 @@ document.getElementById('botonLeerQR').addEventListener('click', function() {
     // Hacer la solicitud al servidor para obtener el código QR
     console.log("Haciendo solicitud para obtener el QR");
 
-    fetch('http://localhost:3000/get-qrcode')
+    fetch('https://mensajeria-cobros-autosleo.onrender.com/get-qrcode')
         .then(response => response.json())
         .then(data => {
             console.log("Respuesta del servidor:", data);
@@ -182,7 +182,7 @@ async function verificarWhatsappListo() {
 
     intervaloVerificacion = setInterval(async () => {
         try {
-            const response = await fetch('http://localhost:3000/whatsapp-ready');
+            const response = await fetch('https://mensajeria-cobros-autosleo.onrender.com/whatsapp-ready');
             const data = await response.json();
             if (data.ready) {
                 console.log('WhatsApp Web está listo');
@@ -237,9 +237,6 @@ function iniciarTemporizadorQR() {
         }
     }, 25000); // 20 segundos
 }
-
-
-
 
 function cerrarTooltipQR() {
     document.getElementById('tooltipQR').style.display = 'none';
@@ -305,7 +302,7 @@ function enviarMensajes(personasNoPagado) {
         "Gracias por su atención.";
 
 
-        fetch('http://localhost:3000/enviar-mensaje', {
+        fetch('https://mensajeria-cobros-autosleo.onrender.com/enviar-mensaje', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
@@ -365,7 +362,7 @@ function ocultarSpinnerYHabilitarBotones(exito) {
 
 function cerrarSesionWhatsapp() {
     // Aquí haces la llamada a tu ruta para cerrar sesión
-    fetch('http://localhost:3000/cerrar-sesion', {
+    fetch('https://mensajeria-cobros-autosleo.onrender.com/cerrar-sesion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
     })

@@ -8,7 +8,13 @@ const qrcode = require('qrcode');
 const app = express();
 
 // Usar CORS para permitir solicitudes del frontend
-app.use(cors());
+const corsOptions = {
+    origin: 'https://mensajeria-cobros-autosleo.onrender.com',
+    methods: 'GET,POST',
+    allowedHeaders: 'Content-Type',
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 // Archivos estáticos
