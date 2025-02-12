@@ -1,5 +1,5 @@
 let personasNoPagado = [];
-let tiempoLimiteQR = 20000; // Tiempo de espera es de 20 seg
+// let tiempoLimiteQR = 20000;
 let contadorTiempoQR;
 let intervaloVerificacion;
 
@@ -207,7 +207,7 @@ async function verificarWhatsappListo() {
         } catch (error) {
             console.error('Error al verificar estado de WhatsApp:', error);
         }
-    }, 20000); // Verificar cada 30 segundos
+    }, 40000); // Verificar cada 40 segundos
 }
 
 function iniciarTemporizadorQR() {
@@ -235,7 +235,7 @@ function iniciarTemporizadorQR() {
             document.getElementById('botonEnviarMensajes').style.display = 'none';
             // clearInterval(intervaloVerificacion); // Detener la verificación de WhatsApp si el QR caduca
         }
-    }, 25000); // 20 segundos
+    }, 45000); // 45 segundos
 }
 
 function cerrarTooltipQR() {
