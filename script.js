@@ -139,18 +139,24 @@ function cerrarModal() {
 // Función para manejar el clic en el botón "Leer QR"
 document.getElementById('botonLeerQR').addEventListener('click', function() {
 
-    // Ocultar el botón de enviar mensajes y el spinner mientras obtenemos el QR
-    document.getElementById('botonEnviarMensajes').style.display = 'none';
-    document.getElementById('cargando').style.display = 'none';
-
+    // Limpiar la URL del QR anterior
+    document.getElementById('codigoQR').src = '';
+    document.getElementById('tooltipQR').style.display = 'none';
     // Limpiar cualquier verificación o temporizador anterior
-    clearInterval(intervaloVerificacion);
     clearTimeout(contadorTiempoQR);
+    clearInterval(intervaloVerificacion);
+    // Ocultar el botón de enviar mensajes y el spinner mientras obtenemos el QR
+    // document.getElementById('botonEnviarMensajes').style.display = 'none';
+    document.getElementById('cargando').style.display = 'block';
+
 
     // Hacer la solicitud al servidor para obtener el código QR
     console.log("Haciendo solicitud para obtener el QR");
 
-    fetch('https://mensajeria-cobros-autosleo.onrender.com/get-qrcode')
+    // Agregar un parámetro único a la URL para evitar cache
+    const timestamp = new Date().getTime();
+
+    fetch(`https://mensajeria-cobros-autosleo.onrender.com/get-qrcode?timestamp=${timestamp}`)
         .then(response => response.json())
         .then(data => {
             console.log("Respuesta del servidor:", data);
@@ -162,13 +168,16 @@ document.getElementById('botonLeerQR').addEventListener('click', function() {
                 
                 // Iniciar el temporizador para verificar si el QR se escane
                 verificarWhatsappListo();
-                iniciarTemporizadorQR();
+                if (!whatsappListo) {
+                    iniciarTemporizadorQR();
+                }
             } else {
                 console.error('No se recibió la URL del QR');
             }
         })
         .catch(error => {
             console.error('Error al obtener el QR:', error);
+            document.getElementById('cargando').style.display = 'none';
         });
 });
 
@@ -207,7 +216,7 @@ async function verificarWhatsappListo() {
         } catch (error) {
             console.error('Error al verificar estado de WhatsApp:', error);
         }
-    }, 40000); // Verificar cada 40 segundos
+    }, 20000); // Verificar cada 20 segundos
 }
 
 function iniciarTemporizadorQR() {
@@ -233,9 +242,10 @@ function iniciarTemporizadorQR() {
             document.getElementById('cargando').style.display = 'none'; 
             cerrarTooltipQR();
             document.getElementById('botonEnviarMensajes').style.display = 'none';
+            document.getElementById('codigoQR').src = '';
             // clearInterval(intervaloVerificacion); // Detener la verificación de WhatsApp si el QR caduca
         }
-    }, 45000); // 45 segundos
+    }, 25000); // 25 segundos
 }
 
 function cerrarTooltipQR() {
@@ -244,38 +254,6 @@ function cerrarTooltipQR() {
 }
 
 // Función para enviar los mensajes a las personas no pagadas
-// function enviarMensajes(personasNoPagado) {
-//     // Iteramos sobre cada persona que tiene pagos pendientes
-//     personasNoPagado.forEach(persona => {
-//         // Crear el mensaje dinámico para cada persona
-//         const mensaje = `
-//             Estimado(a) ${persona.nombre}.
-            
-//             Se le informa que tiene un retraso de ${persona.diasRetraso} días en el pago de su compra.
-            
-//             Su saldo pendiente es: ${persona.factura}.
-            
-//             Le solicitamos amablemente que realice el pago lo antes posible. 
-            
-//             Gracias por su atención.
-//         `;
-
-//         // Enviar mensaje a través del backend
-//         fetch('http://localhost:3000/enviar-mensaje', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             console.log('Mensaje enviado a:', persona.telefono);
-//         })
-//         .catch(error => {
-//             console.error('Error al enviar el mensaje:', error);
-//         });
-//     });
-// }
-
 function enviarMensajes(personasNoPagado) {
     // Mostrar el "loading" mientras se envían los mensajes
     const loading = document.getElementById('cargando');
@@ -313,7 +291,7 @@ function enviarMensajes(personasNoPagado) {
             console.log('Mensaje enviado a:', persona.telefono);
             // Si todos los mensajes han sido enviados, ocultamos el spinner y habilitamos los botones
             if (mensajesEnviados === personasNoPagado.length) {
-                ocultarSpinnerYHabilitarBotones(true);
+                ocultarSpinnerYDeshabilitarBotones(true);
 
                 setTimeout(cerrarSesionWhatsapp, 5000);
             }
@@ -323,21 +301,20 @@ function enviarMensajes(personasNoPagado) {
             console.error('Error al enviar el mensaje:', error);
             // Si hubo un error al enviar todos los mensajes, ocultamos el spinner y habilitamos los botones
             if (mensajesError === personasNoPagado.length) {
-                ocultarSpinnerYHabilitarBotones(false);
+                ocultarSpinnerYDeshabilitarBotones(false);
             }
         });
     });
 }
 
-function ocultarSpinnerYHabilitarBotones(exito) {
+function ocultarSpinnerYDeshabilitarBotones(exito) {
     const loading = document.getElementById('cargando');
     if (loading) {
         loading.style.display = 'none';  // Ocultar el spinner
     }
 
-    // Los botones deben quedar deshabilitados después de enviar los mensajes
-    document.getElementById('botonLeerQR').disabled = true;
-    document.getElementById('botonEnviarMensajes').disabled = true;
+    // Los botones deben se ocultan después de enviar los mensajes
+    document.getElementById('botonLeerQR').style.display = 'none';
     document.getElementById('botonEnviarMensajes').style.display = 'none';
 
     // Mostrar mensaje de éxito o error al usuario
@@ -373,10 +350,14 @@ function cerrarSesionWhatsapp() {
         Swal.fire({
             icon: 'success',
             title: 'Sesión cerrada',
-            text: 'La sesión de WhatsApp se cerró correctamente.',
-        });
-        // Aquí puedes agregar cualquier lógica adicional después de cerrar sesión, como redirigir al usuario o mostrar otro mensaje.
-        // window.location.href = '/inicio';
+            text: 'La sesión de WhatsApp se cerró correctamente. Si no se desvincula automáticamente en tu teléfono, ve a WhatsApp y desvincula la sesión manualmente.',
+        }).then(() => {
+            // Limpiar la URL del QR y refrescar la página
+            document.getElementById('codigoQR').src = '';
+            document.getElementById('tooltipQR').style.display = 'none';
+            // Recargar la página
+            location.reload();
+        })
     })
     .catch(error => {
         console.error("Error al cerrar sesión:", error);

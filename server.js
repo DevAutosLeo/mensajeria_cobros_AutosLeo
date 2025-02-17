@@ -25,20 +25,33 @@ const client = new Client();
 
 let whatsappListo = false;
 
+let qrData = null; // Almacenar el último QR generado
+
 
 // Solo generamos el QR cuando el cliente haga clic en el boton de WhatsApp
 client.on('qr', (qr) => {
     console.log('QR generado:', qr);  // Este es el QR crudo de WhatsApp Web.
-    
-    // Convertimos el QR crudo a una URL base64
-    qrcode.toDataURL(qr, (err, url) => {
+    qrData = qr;
+});
+
+// Ruta para obtener el QR
+app.get('/get-qrcode', (req, res) => {
+    console.log('Solicitud recibida para obtener el QR');
+
+    // Verifica si hay un QR disponible
+    if (!qrData) {
+        return res.status(400).json({ error: 'QR no disponible aún.' });
+    }
+
+    // Generar URL base64 del QR más reciente
+    qrcode.toDataURL(qrData, (err, url) => {
         if (err) {
-            console.error('Error al generar el QR:', err);  // Si hay algún error
-            return;
+            console.error('Error al generar el QR:', err);
+            return res.status(500).json({ error: 'Error al generar el QR' });
         }
-        // Almacenamos la URL del QR para enviarlo cuando el frontend lo solicite
-        global.qrUrl = url;
-        console.log('QR convertido a URL:', url);  // Esta es la URL base64
+
+        // Enviar la URL del QR generado en base64 al frontend
+        res.json({ qrUrl: url });
     });
 });
 
@@ -51,23 +64,14 @@ client.initialize();
 
 
 // Ruta para obtener el QR generado
-app.get('/get-qrcode', (req, res) => {
-    console.log('Solicitud recibida para generar el QR');
+// app.get('/get-qrcode', (req, res) => {
+//     console.log('Solicitud recibida para generar el QR');
     
-    // Enviamos la URL del QR ya generado
-    if (global.qrUrl) {
-        res.json({ qrUrl: global.qrUrl });
-    } else {
-        res.status(500).json({ error: 'QR no disponible' });
-    }
-});
-
-// app.get('/whatsapp-ready', (req, res) => {
-//     // Verificar si WhatsApp Web está listo
-//     if (client.pupPage && client.pupPage.isClosed() === false) {
-//         res.json({ ready: true });
+//     // Enviamos la URL del QR ya generado
+//     if (global.qrUrl) {
+//         res.json({ qrUrl: global.qrUrl });
 //     } else {
-//         res.json({ ready: false });
+//         res.status(500).json({ error: 'QR no disponible' });
 //     }
 // });
 
@@ -118,9 +122,21 @@ app.post('/enviar-mensaje', async (req, res) => {
 // Ruta para cerrar sesión
 app.post('/cerrar-sesion', (req, res) => {
     if (client) {
+        // Intentar cerrar la sesión y destruir el cliente
         client.logout().then(() => {
             console.log("Sesión cerrada exitosamente.");
-            res.status(200).json({ message: 'Sesión cerrada' });
+            whatsappListo = false; // Restablecer estado 'listo'
+            client.destroy(); // Asegurarse de destruir el cliente
+            console.log("Cliente destruido.");
+
+            // Reiniciar el cliente para generar nuevo QR
+            client.initialize().then(() => {
+                console.log("Cliente reiniciado correctamente.");
+                res.status(200).json({ message: 'Sesión cerrada y cliente reiniciado' });
+            }).catch(err => {
+                console.error("Error al reiniciar el cliente:", err);
+                res.status(500).json({ error: 'Error al reiniciar el cliente' });
+            });
         }).catch(err => {
             console.error("Error al cerrar sesión:", err);
             res.status(500).json({ error: 'Error al cerrar sesión' });
@@ -130,14 +146,9 @@ app.post('/cerrar-sesion', (req, res) => {
     }
 });
 
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
-
-// app.listen(3000, () => {
-//     console.log('Servidor corriendo en http://localhost:3000');
-// });
-
