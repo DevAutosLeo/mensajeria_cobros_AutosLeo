@@ -216,7 +216,7 @@ async function verificarWhatsappListo() {
         } catch (error) {
             console.error('Error al verificar estado de WhatsApp:', error);
         }
-    }, 40000); // Verificar cada 40 segundos
+    }, 66000); // Verificar cada 66 segundos
 }
 
 function iniciarTemporizadorQR() {
@@ -245,7 +245,7 @@ function iniciarTemporizadorQR() {
             document.getElementById('codigoQR').src = '';
             // clearInterval(intervaloVerificacion); // Detener la verificación de WhatsApp si el QR caduca
         }
-    }, 45000); // 45 segundos
+    }, 71000); // 70 segundos
 }
 
 function cerrarTooltipQR() {
