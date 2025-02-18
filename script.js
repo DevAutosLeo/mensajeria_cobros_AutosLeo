@@ -216,7 +216,7 @@ async function verificarWhatsappListo() {
         } catch (error) {
             console.error('Error al verificar estado de WhatsApp:', error);
         }
-    }, 70000); // Verificar cada 70 segundos
+    }, 10000); // Verificar cada 10 segundos
 }
 
 function iniciarTemporizadorQR() {
