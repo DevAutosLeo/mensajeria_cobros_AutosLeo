@@ -307,7 +307,7 @@ async function verificarWhatsappListo() {
             // Detener la verificación de WhatsApp si el QR caduca
             clearInterval(intervaloVerificacion);
         }
-    }, 90000); // 90 segundos
+    }, 120000); // 2 minutos
 }
 
 
