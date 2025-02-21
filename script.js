@@ -168,9 +168,9 @@ document.getElementById('botonLeerQR').addEventListener('click', function() {
                 
                 // Iniciar el temporizador para verificar si el QR se escane
                 verificarWhatsappListo();
-                if (!whatsappListo) {
-                    iniciarTemporizadorQR();
-                }
+                // if (!whatsappListo) {
+                //     iniciarTemporizadorQR();
+                // }
             } else {
                 console.error('No se recibió la URL del QR');
             }
@@ -185,6 +185,69 @@ document.getElementById('botonLeerQR').addEventListener('click', function() {
 let whatsappListo = false;
 
 // Función para verificar que WhatsApp este listo
+// async function verificarWhatsappListo() {
+//     // Mostrar el "spinner" cuando comience la verificación
+//     document.getElementById('cargando').style.display = 'block';
+
+//     intervaloVerificacion = setInterval(async () => {
+//         try {
+//             const response = await fetch('http://localhost:3000/whatsapp-ready');
+//             const data = await response.json();
+//             if (data.ready) {
+//                 console.log('WhatsApp Web está listo');
+//                 whatsappListo = true;
+
+//                 // Detener el temporizador si WhatsApp está listo
+//                 clearTimeout(contadorTiempoQR);
+//                 clearInterval(intervaloVerificacion);
+
+//                 document.getElementById('cargando').style.display = 'none';
+//                 // Habilitar el botón "Enviar Mensajes" solo cuando WhatsApp esté listo
+//                 document.getElementById('botonEnviarMensajes').style.display = 'inline-block';
+//                 // Cerrar el tooltip QR una vez que WhatsApp esté listo
+//                 cerrarTooltipQR();
+
+//                 // clearTimeout(contadorTiempoQR);
+//                 // Detener la verificación periódica
+//                 // clearInterval(interval); // Detener la verificación cuando WhatsApp esté listo
+//             } else {
+//                 console.log('WhatsApp Web no está listo');
+//             }
+//         } catch (error) {
+//             console.error('Error al verificar estado de WhatsApp:', error);
+//         }
+//     }, 10000); // Verificar cada 10 segundos
+// }
+
+// function iniciarTemporizadorQR() {
+//     // Si WhatsApp ya está listo, no ejecutar el temporizador de caducidad
+//     if (whatsappListo) {
+//         console.log('WhatsApp ya está listo, no se inicia el temporizador de caducidad.');
+//         return;
+//     }
+
+//     clearTimeout(contadorTiempoQR); // Limpiamos cualquier temporizador anterior
+
+//     // Iniciar el temporizador para caducidad del QR
+//     contadorTiempoQR = setTimeout(() => {
+//         // Solo mostrar el mensaje de caducidad si WhatsApp no está listo
+//         if (!whatsappListo) {
+//             // alert("El tiempo para escanear el código QR ha caducado. Por favor, genera un nuevo código QR y escanéalo lo más pronto posible.");
+//             Swal.fire({
+//                 icon: 'warning',
+//                 title: 'Tiempo caducado',
+//                 text: 'El tiempo para escanear el código QR ha caducado. Por favor, genera un nuevo código QR y escanéalo lo más pronto posible.'
+//             });
+
+//             document.getElementById('cargando').style.display = 'none'; 
+//             cerrarTooltipQR();
+//             document.getElementById('botonEnviarMensajes').style.display = 'none';
+//             document.getElementById('codigoQR').src = '';
+//             // clearInterval(intervaloVerificacion); // Detener la verificación de WhatsApp si el QR caduca
+//         }
+//     }, 74000); // 74 segundos
+// }
+
 async function verificarWhatsappListo() {
     // Mostrar el "spinner" cuando comience la verificación
     document.getElementById('cargando').style.display = 'block';
@@ -207,9 +270,6 @@ async function verificarWhatsappListo() {
                 // Cerrar el tooltip QR una vez que WhatsApp esté listo
                 cerrarTooltipQR();
 
-                // clearTimeout(contadorTiempoQR);
-                // Detener la verificación periódica
-                // clearInterval(interval); // Detener la verificación cuando WhatsApp esté listo
             } else {
                 console.log('WhatsApp Web no está listo');
             }
@@ -217,22 +277,12 @@ async function verificarWhatsappListo() {
             console.error('Error al verificar estado de WhatsApp:', error);
         }
     }, 10000); // Verificar cada 10 segundos
-}
 
-function iniciarTemporizadorQR() {
-    // Si WhatsApp ya está listo, no ejecutar el temporizador de caducidad
-    if (whatsappListo) {
-        console.log('WhatsApp ya está listo, no se inicia el temporizador de caducidad.');
-        return;
-    }
-
-    clearTimeout(contadorTiempoQR); // Limpiamos cualquier temporizador anterior
-
-    // Iniciar el temporizador para caducidad del QR
+    // Iniciar el temporizador para caducidad del QR si WhatsApp no está listo
     contadorTiempoQR = setTimeout(() => {
         // Solo mostrar el mensaje de caducidad si WhatsApp no está listo
         if (!whatsappListo) {
-            // alert("El tiempo para escanear el código QR ha caducado. Por favor, genera un nuevo código QR y escanéalo lo más pronto posible.");
+            // Mostrar el mensaje de caducidad
             Swal.fire({
                 icon: 'warning',
                 title: 'Tiempo caducado',
@@ -243,10 +293,12 @@ function iniciarTemporizadorQR() {
             cerrarTooltipQR();
             document.getElementById('botonEnviarMensajes').style.display = 'none';
             document.getElementById('codigoQR').src = '';
-            // clearInterval(intervaloVerificacion); // Detener la verificación de WhatsApp si el QR caduca
+            // Detener la verificación de WhatsApp si el QR caduca
+            clearInterval(intervaloVerificacion);
         }
     }, 74000); // 74 segundos
 }
+
 
 function cerrarTooltipQR() {
     document.getElementById('tooltipQR').style.display = 'none';
