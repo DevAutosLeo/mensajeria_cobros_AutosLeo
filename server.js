@@ -45,7 +45,7 @@ client.on('qr', (qr) => {
         qrTiempoEspera = setTimeout(() => {
             console.log('Tiempo de espera del QR ha expirado');
             qrEsperando = false;
-        }, 74000); // 74 segundos
+        }, 90000); // 90 segundos
     }
 });
 

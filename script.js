@@ -173,10 +173,21 @@ document.getElementById('botonLeerQR').addEventListener('click', function() {
                 // }
             } else {
                 console.error('No se recibió la URL del QR');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'QR no disponible',
+                    text: 'No se recibió correctamente el QR. Por favor, genera un nuevo código QR.'
+                });
+                document.getElementById('cargando').style.display = 'none';
             }
         })
         .catch(error => {
             console.error('Error al obtener el QR:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'Hubo un problema al obtener el código QR. Verifica tu conexión y vuelve a intentarlo.'
+            });
             document.getElementById('cargando').style.display = 'none';
         });
 });
@@ -296,7 +307,7 @@ async function verificarWhatsappListo() {
             // Detener la verificación de WhatsApp si el QR caduca
             clearInterval(intervaloVerificacion);
         }
-    }, 74000); // 74 segundos
+    }, 90000); // 90 segundos
 }
 
 
