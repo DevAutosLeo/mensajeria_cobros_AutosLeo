@@ -317,60 +317,6 @@ function cerrarTooltipQR() {
 }
 
 // Función para enviar los mensajes a las personas no pagadas
-// function enviarMensajes(personasNoPagado) {
-//     // Mostrar el "loading" mientras se envían los mensajes
-//     const loading = document.getElementById('cargando');
-//     const mensajeElement = loading.querySelector('p');
-//     if (loading && mensajeElement) {
-//         loading.style.display = 'block';  // Mostrar el spinner
-//         mensajeElement.textContent = 'Enviando mensajes...';
-//     }
-
-//     // Deshabilitar los botones para evitar envíos múltiples
-//     document.getElementById('botonLeerQR').disabled = true;
-//     document.getElementById('botonEnviarMensajes').disabled = true;
-
-//     let mensajesEnviados = 0;
-//     let mensajesError = 0;
-
-//     // Iteramos sobre cada persona que tiene pagos pendientes
-//     personasNoPagado.forEach(persona => {
-
-//         const mensaje = "Estimado(a) *" + persona.nombre + "*.\n\n" +
-//         "Se le informa que tiene un retraso de *" + persona.diasRetraso + "* días en el pago de su compra en *AUTOSLEO*.\n\n" +
-//         "Su saldo pendiente es: $ *" + persona.factura + "*.\n\n" +
-//         "Le solicitamos amablemente que realice el pago lo antes posible.\n\n" +
-//         "Gracias por su atención.";
-
-
-//         fetch('https://mensajeria-cobros-autosleo.onrender.com/enviar-mensaje', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             mensajesEnviados++;
-//             console.log('Mensaje enviado a:', persona.telefono);
-//             // Si todos los mensajes han sido enviados, ocultamos el spinner y habilitamos los botones
-//             if (mensajesEnviados === personasNoPagado.length) {
-//                 ocultarSpinnerYDeshabilitarBotones(true);
-
-//                 setTimeout(cerrarSesionWhatsapp, 5000);
-//             }
-//         })
-//         .catch(error => {
-//             mensajesError++;
-//             console.error('Error al enviar el mensaje:', error);
-//             // Si hubo un error al enviar todos los mensajes, ocultamos el spinner y habilitamos los botones
-//             if (mensajesError === personasNoPagado.length) {
-//                 ocultarSpinnerYDeshabilitarBotones(false);
-//             }
-//         });
-//     });
-// }
-
-// Función para enviar los mensajes a las personas no pagadas dos veces
 function enviarMensajes(personasNoPagado) {
     // Mostrar el "loading" mientras se envían los mensajes
     const loading = document.getElementById('cargando');
@@ -396,35 +342,89 @@ function enviarMensajes(personasNoPagado) {
         "Le solicitamos amablemente que realice el pago lo antes posible.\n\n" +
         "Gracias por su atención.";
 
-        // Enviar el mensaje dos veces
-        [1, 2].forEach(() => {
-            fetch('https://mensajeria-cobros-autosleo.onrender.com/enviar-mensaje', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
-            })
-            .then(response => response.json())
-            .then(data => {
-                mensajesEnviados++;
-                console.log('Mensaje enviado a:', persona.telefono);
-                // Si todos los mensajes han sido enviados, ocultamos el spinner y habilitamos los botones
-                if (mensajesEnviados === personasNoPagado.length * 2) {
-                    ocultarSpinnerYDeshabilitarBotones(true);
 
-                    setTimeout(cerrarSesionWhatsapp, 120000); // A los 2 minutos se cierra la sesión de WhastApp
-                }
-            })
-            .catch(error => {
-                mensajesError++;
-                console.error('Error al enviar el mensaje:', error);
-                // Si hubo un error al enviar todos los mensajes, ocultamos el spinner y habilitamos los botones
-                if (mensajesError === personasNoPagado.length * 2) {
-                    ocultarSpinnerYDeshabilitarBotones(false);
-                }
-            });
+        fetch('https://mensajeria-cobros-autosleo.onrender.com/enviar-mensaje', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
+        })
+        .then(response => response.json())
+        .then(data => {
+            mensajesEnviados++;
+            console.log('Mensaje enviado a:', persona.telefono);
+            // Si todos los mensajes han sido enviados, ocultamos el spinner y habilitamos los botones
+            if (mensajesEnviados === personasNoPagado.length) {
+                ocultarSpinnerYDeshabilitarBotones(true);
+
+                setTimeout(cerrarSesionWhatsapp, 120000); // A los 2 minutos se cierra la sesión de WhastApp
+            }
+        })
+        .catch(error => {
+            mensajesError++;
+            console.error('Error al enviar el mensaje:', error);
+            // Si hubo un error al enviar todos los mensajes, ocultamos el spinner y habilitamos los botones
+            if (mensajesError === personasNoPagado.length) {
+                ocultarSpinnerYDeshabilitarBotones(false);
+            }
         });
     });
 }
+
+// Función para enviar los mensajes a las personas no pagadas dos veces
+// function enviarMensajes(personasNoPagado) {
+//     // Mostrar el "loading" mientras se envían los mensajes
+//     const loading = document.getElementById('cargando');
+//     const mensajeElement = loading.querySelector('p');
+//     if (loading && mensajeElement) {
+//         loading.style.display = 'block';  // Mostrar el spinner
+//         mensajeElement.textContent = 'Enviando mensajes...';
+//     }
+
+//     // Deshabilitar los botones para evitar envíos múltiples
+//     document.getElementById('botonLeerQR').disabled = true;
+//     document.getElementById('botonEnviarMensajes').disabled = true;
+
+//     let mensajesEnviados = 0;
+//     let mensajesError = 0;
+
+//     // Iteramos sobre cada persona que tiene pagos pendientes
+//     personasNoPagado.forEach(persona => {
+
+//         const mensaje = "Estimado(a) *" + persona.nombre + "*.\n\n" +
+//         "Se le informa que tiene un retraso de *" + persona.diasRetraso + "* días en el pago de su compra en *AUTOSLEO*.\n\n" +
+//         "Su saldo pendiente es: $ *" + persona.factura + "*.\n\n" +
+//         "Le solicitamos amablemente que realice el pago lo antes posible.\n\n" +
+//         "Gracias por su atención.";
+
+//         // Enviar el mensaje dos veces
+//         [1, 2].forEach(() => {
+//             fetch('https://mensajeria-cobros-autosleo.onrender.com/enviar-mensaje', {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify({ telefono: persona.telefono, mensaje: mensaje })
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 mensajesEnviados++;
+//                 console.log('Mensaje enviado a:', persona.telefono);
+//                 // Si todos los mensajes han sido enviados, ocultamos el spinner y habilitamos los botones
+//                 if (mensajesEnviados === personasNoPagado.length * 2) {
+//                     ocultarSpinnerYDeshabilitarBotones(true);
+
+//                     setTimeout(cerrarSesionWhatsapp, 120000); // A los 2 minutos se cierra la sesión de WhastApp
+//                 }
+//             })
+//             .catch(error => {
+//                 mensajesError++;
+//                 console.error('Error al enviar el mensaje:', error);
+//                 // Si hubo un error al enviar todos los mensajes, ocultamos el spinner y habilitamos los botones
+//                 if (mensajesError === personasNoPagado.length * 2) {
+//                     ocultarSpinnerYDeshabilitarBotones(false);
+//                 }
+//             });
+//         });
+//     });
+// }
 
 function ocultarSpinnerYDeshabilitarBotones(exito) {
     const loading = document.getElementById('cargando');
