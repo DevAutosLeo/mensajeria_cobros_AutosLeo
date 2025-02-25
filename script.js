@@ -411,7 +411,7 @@ function enviarMensajes(personasNoPagado) {
                 if (mensajesEnviados === personasNoPagado.length * 2) {
                     ocultarSpinnerYDeshabilitarBotones(true);
 
-                    setTimeout(cerrarSesionWhatsapp, 5000);
+                    setTimeout(cerrarSesionWhatsapp, 120000); // A los 2 minutos se cierra la sesión de WhastApp
                 }
             })
             .catch(error => {
